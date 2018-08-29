@@ -8,6 +8,7 @@ app.config['JWT_SECRET_KEY'] = 'secret!'
 app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
 
 blacklist = set()
 
@@ -21,7 +22,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return jti in blacklist
 
 from .routes import routes
-from .controllers import UserRegistration, Socket
+from .controllers import UserRegistration, Chatroom
 
 api.add_resource(UserRegistration.UserRegistration, '/registration')
 api.add_resource(UserRegistration.UserLogin, '/login')
