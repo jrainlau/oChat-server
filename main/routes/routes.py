@@ -1,4 +1,4 @@
-from .. import app
+from .. import app, socketio
 from flask import jsonify
 
 @app.route('/')

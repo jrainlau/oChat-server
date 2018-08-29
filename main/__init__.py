@@ -1,6 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
+from flask_socketio import SocketIO
 
 app = Flask(__name__)
 app.config['JWT_SECRET_KEY'] = 'secret!'
@@ -12,6 +13,7 @@ blacklist = set()
 
 api = Api(app)
 jwt = JWTManager(app)
+socketio = SocketIO(app, async_handlers=True)
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
@@ -19,7 +21,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return jti in blacklist
 
 from .routes import routes
-from .controllers import UserRegistration
+from .controllers import UserRegistration, Socket
 
 api.add_resource(UserRegistration.UserRegistration, '/registration')
 api.add_resource(UserRegistration.UserLogin, '/login')

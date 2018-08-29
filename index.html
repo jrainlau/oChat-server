@@ -1,0 +1,21 @@
+<script src="https://cdn.bootcss.com/socket.io/2.1.1/socket.io.dev.js"></script>
+<script type="text/javascript" charset="utf-8">
+    const token = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpYXQiOjE1MzU1MTM5ODIsIm5iZiI6MTUzNTUxMzk4MiwianRpIjoiMmViZTM1MGUtODc5MS00MDMwLWFlM2YtYTRhMjczMzBjZmZlIiwiZXhwIjoxNTM1NTE0ODgyLCJpZGVudGl0eSI6InVzZXIyIiwiZnJlc2giOmZhbHNlLCJ0eXBlIjoiYWNjZXNzIn0.QfwptiBu3lF7mEmxv_TauL0E_y0y-dNqy8Ncbfb0mj8'
+
+    var socket = io('http://127.0.0.1:5000/chat', {
+        query: { token }
+    });
+    socket.on('connect', function() {
+        socket.on('Connect successed', (msg) => {
+          console.log(msg)
+          socket.emit('join', 'llalalal')
+          socket.on('join', (msg) => {
+            console.log(msg)
+          })
+        })
+        socket.on('Connect failed', (msg) => {
+          console.log(msg)
+          socket.disconnect()
+        })
+    });
+</script>

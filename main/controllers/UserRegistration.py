@@ -63,4 +63,5 @@ class TokenRefresh(Resource):
 class AllUsers(Resource):
     @jwt_required
     def get(self):
+        print(get_jwt_identity())
         return UserModel.getAllUsers(self)
