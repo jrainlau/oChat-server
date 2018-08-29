@@ -4,6 +4,9 @@ from flask_socketio import send, emit, disconnect, join_room, leave_room
 from flask import request
 from flask_jwt_extended import get_jti, decode_token
 
+roomMap = dict()
+userMap = dict()
+
 def message(msg, code):
     return {
         'message': msg,
@@ -13,6 +16,8 @@ def message(msg, code):
 def authenticated_only(f):
     @functools.wraps(f)
     def wrapped(*args, **kwargs):
+        # get_jti(request.args.get('token'))
+        # return f(*args, **kwargs)
         try:
             get_jti(request.args.get('token'))
             return f(*args, **kwargs)
@@ -31,10 +36,24 @@ def handleJoin(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['room']
     join_room(room)
+    if not room in roomMap:
+        roomMap[room] = {
+            'members': set()
+        }
+    roomMap[room]['members'].add(user)
+
+    if not user in userMap:
+        userMap[user] = {
+            'joined_rooms': set()
+        }
+    userMap[user]['joined_rooms'].add(room)
+
     emit('status', message({
         'status': 'joined',
         'user': user,
-        'room': room
+        'current_room': room,
+        'joined_rooms': [room for room in userMap[user]['joined_rooms']],
+        'members': [member for member in roomMap[room]['members']]
     }, 200), room = room)
 
 @socketio.on('leave', namespace = '/chat')
@@ -43,10 +62,14 @@ def handleLeave(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['room']
     leave_room(room)
+    roomMap[room]['members'].remove(user)
+    userMap[user]['joined_rooms'].remove(room)
     emit('status', message({
         'status': 'left',
         'user': user,
-        'room': room
+        'current_room': room,
+        'joined_rooms': [room for room in userMap[user]['joined_rooms']],
+        'members': [member for member in roomMap[room]['members']]
     }, 200), room = room)
 
 @socketio.on('text', namespace = '/chat')
@@ -54,4 +77,7 @@ def handleLeave(data):
 def handleText(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['room']
-    emit('message', message(user + ': ' + data['message'], 200), room = room)
+    emit('message', message({
+        'user': user,
+        'text': data['message']
+    }, 200), room = room)

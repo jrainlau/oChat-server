@@ -25,20 +25,22 @@
         const submitBtn = document.querySelector('#submit')
         const chat = document.querySelector('#chat')
         
-        socket.on('Connect successed', (msg) => {
-          console.log(msg)
+        socket.on('Connect successed', (data) => {
+          console.log(data)
         })
-        socket.on('Connect failed', (msg) => {
-          console.log(msg)
+        socket.on('Connect failed', (data) => {
+          console.log(data)
           socket.disconnect()
         })
-        socket.on('status', (msg) => {
-          chat.value += typeof msg.message === 'object'
-            ? `${msg.message.user} has ${msg.message.status} ${msg.message.room}\n`
-            : msg.message
+        socket.on('status', (data) => {
+          console.log(data)
+          chat.value += typeof data.message === 'object'
+            ? `${data.message.user} has ${data.message.status} ${data.message.current_room}\n`
+            : data.message
         })
-        socket.on('message', (msg) => {
-          chat.value += msg.message + '\n'
+        socket.on('message', (data) => {
+            console.log(data)
+          chat.value += `${data.message.user}: ${data.message.text}\n`
         })
 
         joinBtn.addEventListener('click', () => {
