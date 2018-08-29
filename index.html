@@ -33,7 +33,9 @@
           socket.disconnect()
         })
         socket.on('status', (msg) => {
-          chat.value += typeof msg.message === 'object' ? `${msg.message.user} has ${msg.message.status} ${msg.message.room}\n` : msg.message
+          chat.value += typeof msg.message === 'object'
+            ? `${msg.message.user} has ${msg.message.status} ${msg.message.room}\n`
+            : msg.message
         })
         socket.on('message', (msg) => {
           chat.value += msg.message + '\n'
