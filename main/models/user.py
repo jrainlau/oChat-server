@@ -3,10 +3,11 @@ from passlib.hash import pbkdf2_sha256 as sha256
 
 class UserModel():
     inviteCode = ''
-    def __init__(self, username, password, nickname = '', inviteCode = ''):
+    def __init__(self, username, password, nickname = '', inviteCode = '', picture = ''):
         self.username = username
         self.password = password
         self.nickname = nickname
+        self.picture = picture
         UserModel.inviteCode = inviteCode
 
     @staticmethod
@@ -22,7 +23,7 @@ class UserModel():
 
     def getUser(self):
         user = {}
-        with open('./userList.txt') as f:
+        with open('./datas/userList.txt') as f:
             for line in f.readlines():
                 existUser = ast.literal_eval(line)
                 if self.username == existUser['username'] and UserModel.verify_hash(self.password, existUser['password']):
@@ -33,20 +34,20 @@ class UserModel():
 
     def getAllUsers(self):
         userList = []
-        with open('./userList.txt') as f:
+        with open('./datas/userList.txt') as f:
             for line in f.readlines():
                 userList.append(ast.literal_eval(line))
         return userList
             
     def isInvited(self):
         isInvited = False
-        with open('./inviteCodes.txt', 'r') as f:
+        with open('./datas/inviteCodes.txt', 'r') as f:
             originList = ast.literal_eval(f.read())
             for code in originList:
                 if UserModel.inviteCode == str(code):
                     isInvited = True
                     originList.remove(code)
-                    with open('./inviteCodes.txt', 'w') as _f:
+                    with open('./datas/inviteCodes.txt', 'w') as _f:
                         _f.write(str(originList))
                     break
         return isInvited
@@ -54,7 +55,7 @@ class UserModel():
 
     def registration(self):
         if not self.getUser() and self.isInvited():
-            with open('./userList.txt', 'a+') as f:
+            with open('./datas/userList.txt', 'a+') as f:
                 newUser = self.detail()
                 newUser['password'] = UserModel.generate_hash(newUser['password'])
                 f.write(str(newUser) + '\n')

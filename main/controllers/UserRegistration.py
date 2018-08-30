@@ -3,6 +3,7 @@ from ..models.user import UserModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
 from .. import blacklist
 from .Chatroom import roomMap
+import werkzeug
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'This field cannot be blank', required = True)
@@ -13,9 +14,10 @@ class UserRegistration(Resource):
         parser_register = parser.copy()
         parser_register.add_argument('nickname', help = 'This field cannot be blank', required = True)
         parser_register.add_argument('inviteCode', help = 'This field cannot be blank', required = True)
+        parser_register.add_argument('picture')
         data = parser_register.parse_args()
 
-        result = UserModel(data['username'], data['password'], data['nickname'], data['inviteCode']).registration()
+        result = UserModel(data['username'], data['password'], data['nickname'], data['inviteCode'], data['picture']).registration()
 
         if isinstance(result, dict):
             access_token = create_access_token(identity = data['username'])
