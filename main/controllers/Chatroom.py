@@ -4,6 +4,7 @@ from flask_socketio import send, emit, disconnect, join_room, leave_room
 from flask import request
 from flask_jwt_extended import get_jti, decode_token
 from ..utils.roomName import generateRoomName
+from ..models.user import UserModel
 
 roomMap = dict()
 userMap = dict()
@@ -34,6 +35,7 @@ def handleConnect():
 def handleJoin(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
+    avatar = UserModel(user).getUser(noPsw = True)['avatar']
     if 'roomName' in data and data['roomName']:
         roomName = data['roomName']
     else:
@@ -67,6 +69,7 @@ def handleJoin(data):
     emit('status', message({
         'status': 'joined',
         'user': user,
+        'avatar': avatar,
         'roomId': room,
         'roomName': roomName,
         'joinedRooms': userMap[user]['joinedRooms'],
