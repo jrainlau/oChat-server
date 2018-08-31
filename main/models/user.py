@@ -3,11 +3,10 @@ from passlib.hash import pbkdf2_sha256 as sha256
 
 class UserModel():
     inviteCode = ''
-    def __init__(self, username, password, nickname = '', inviteCode = '', picture = ''):
+    def __init__(self, username = '', password = '', inviteCode = '', avatar = ''):
         self.username = username
         self.password = password
-        self.nickname = nickname
-        self.picture = picture
+        self.avatar = avatar
         UserModel.inviteCode = inviteCode
 
     @staticmethod
@@ -21,15 +20,21 @@ class UserModel():
     def detail(self):
         return self.__dict__
 
-    def getUser(self):
+    def getUser(self, noPsw = False):
         user = {}
         with open('./datas/userList.txt') as f:
             for line in f.readlines():
                 existUser = ast.literal_eval(line)
-                if self.username == existUser['username'] and UserModel.verify_hash(self.password, existUser['password']):
-                    del existUser['password']
-                    user = existUser
-                    break
+                if not noPsw:
+                    if self.username == existUser['username'] and UserModel.verify_hash(self.password, existUser['password']):
+                        del existUser['password']
+                        user = existUser
+                        break
+                else:
+                    if self.username == existUser['username']:
+                        del existUser['password']
+                        user = existUser
+                        break
         return user
 
     def getAllUsers(self):

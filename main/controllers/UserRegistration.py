@@ -12,21 +12,29 @@ parser.add_argument('password', help = 'This field cannot be blank', required = 
 class UserRegistration(Resource):
     def post(self):
         parser_register = parser.copy()
-        parser_register.add_argument('nickname', help = 'This field cannot be blank', required = True)
         parser_register.add_argument('inviteCode', help = 'This field cannot be blank', required = True)
-        parser_register.add_argument('picture')
+        parser_register.add_argument('avatar')
         data = parser_register.parse_args()
 
-        result = UserModel(data['username'], data['password'], data['nickname'], data['inviteCode'], data['picture']).registration()
+        result = UserModel(data['username'], data['password'], data['inviteCode'], data['avatar']).registration()
 
         if isinstance(result, dict):
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             result['access_token'] = access_token
             result['refresh_token'] = refresh_token
-            return result
+            return { 'message': result }, 200
         else:
             return { 'message': result }, 500
+
+class UserExist(Resource):
+    def post(self):
+        parser_exist = reqparse.RequestParser()
+        parser_exist.add_argument('username', help = 'This field cannot be blank', required = True)
+        data = parser_exist.parse_args()
+
+        result = UserModel(data['username']).getUser(noPsw = True)
+        return { 'message': result }, 200
 
 class UserLogin(Resource):
     def post(self):
@@ -38,7 +46,7 @@ class UserLogin(Resource):
             refresh_token = create_refresh_token(identity = data['username'])
             user['access_token'] = access_token
             user['refresh_token'] = refresh_token
-            return user
+            return { 'message': user }, 200
         else:
             return { 'message': 'Username is not exist or password incorrect!' }, 500
 
@@ -61,7 +69,11 @@ class TokenRefresh(Resource):
     def post(self):
         current_user = get_jwt_identity()
         access_token = create_access_token(identity = current_user)
-        return { 'access_token': access_token }
+        return {
+            'message': {
+                'access_token': access_token
+            }
+        }, 200
 
 class AllUsers(Resource):
     @jwt_required
