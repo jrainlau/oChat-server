@@ -30,9 +30,9 @@ def authenticatedOnly(f):
 def handleConnect():
     emit('Connect successed', message('Connect successed!', 200))
 
-@socketio.on('join', namespace = '/chat')
+@socketio.on('create', namespace = '/chat')
 @authenticatedOnly
-def handleJoin(data):
+def handleCreate(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
     avatar = UserModel(user).getUser(noPsw = True)['avatar']
@@ -40,16 +40,14 @@ def handleJoin(data):
         roomName = data['roomName']
     else:
         roomName = generateRoomName()
+
     join_room(room)
 
-    if not room in roomMap:
-        roomMap[room] = {
-            'members': [],
-            'roomId': room,
-            'roomName': roomName
-        }
-    else:
-        roomName = roomMap[room]['roomName']
+    roomMap[room] = {
+        'members': [],
+        'roomId': room,
+        'roomName': roomName
+    }
 
     if not user in roomMap[room]['members']:
         roomMap[room]['members'].append(user)
@@ -65,6 +63,46 @@ def handleJoin(data):
     }
     if not room in [room['roomId'] for room in userMap[user]['joinedRooms']]:
         userMap[user]['joinedRooms'].append(thisRoom)
+
+    emit('status', message({
+        'status': 'created',
+        'user': user,
+        'avatar': avatar,
+        'roomId': room,
+        'roomName': roomName,
+        'joinedRooms': userMap[user]['joinedRooms'],
+        'members': roomMap[room]['members']
+    }, 200), room = room)
+
+@socketio.on('join', namespace = '/chat')
+@authenticatedOnly
+def handleJoin(data):
+    user = decode_token(request.args.get('token'))['identity']
+    room = data['roomId']
+    avatar = UserModel(user).getUser(noPsw = True)['avatar']
+
+    if not room in roomMap:
+        emit('status', message({
+            'status': 'join failed'
+        }))
+        return False
+
+    if not user in roomMap[room]['members']:
+        roomMap[room]['members'].append(user)
+
+    if not user in userMap:
+        userMap[user] = {
+            'joinedRooms': []
+        }
+    thisRoom = {
+        'roomName': roomMap[room]['roomname'],
+        'roomId': room,
+        'members': roomMap[room]['members']
+    }
+    if not room in [room['roomId'] for room in userMap[user]['joinedRooms']]:
+        userMap[user]['joinedRooms'].append(thisRoom)
+
+    join_room(room)
 
     emit('status', message({
         'status': 'joined',
@@ -106,7 +144,7 @@ def handleLeave(data):
 @authenticatedOnly
 def handleText(data):
     user = decode_token(request.args.get('token'))['identity']
-    room = data['room']
+    room = data['roomId']
     emit('message', message({
         'user': user,
         'text': data['message']
