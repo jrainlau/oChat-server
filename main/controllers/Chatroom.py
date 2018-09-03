@@ -82,7 +82,7 @@ def handleCreate(data):
     }, 200), room = room)
 
 @socketio.on('join', namespace = '/chat')
-# @authenticatedOnly
+@authenticatedOnly
 def handleJoin(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
