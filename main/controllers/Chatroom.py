@@ -28,7 +28,14 @@ def authenticatedOnly(f):
 @socketio.on('connect', namespace = '/chat')
 @authenticatedOnly
 def handleConnect():
-    emit('Connect successed', message('Connect successed!', 200))
+    user = decode_token(request.args.get('token'))['identity']
+    joinedRooms = []
+    if user in userMap:
+        joinedRooms = userMap[user]['joinedRooms']
+    emit('Connect successed', message({
+        'status': 'connect',
+        'joinedRooms': joinedRooms,
+    }, 200))
 
 @socketio.on('create', namespace = '/chat')
 @authenticatedOnly
@@ -147,7 +154,9 @@ def handleText(data):
     room = data['roomId']
     emit('message', message({
         'user': user,
-        'text': data['message']
+        'text': data['message'],
+        'roomId': roomMap[room]['roomId'],
+        'roomName': roomMap[room]['roomName']
     }, 200), room = room)
 
 @socketio.on('rename', namespace = '/chat')
