@@ -1,4 +1,5 @@
 import functools
+import time
 from .. import socketio
 from flask_socketio import send, emit, disconnect, join_room, leave_room
 from flask import request
@@ -10,6 +11,7 @@ roomMap = dict()
 userMap = dict()
 
 def message(msg, code):
+    msg['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
     return {
         'message': msg,
         'code': code
