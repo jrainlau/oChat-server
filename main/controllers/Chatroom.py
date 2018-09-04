@@ -11,7 +11,7 @@ roomMap = dict()
 userMap = dict()
 
 def message(msg, code):
-    msg['time'] = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+    msg['time'] = time.strftime("%Y-%m-%d %H:%M", time.localtime())
     return {
         'message': msg,
         'code': code
@@ -34,6 +34,7 @@ def handleConnect():
     joinedRooms = []
     if user in userMap:
         joinedRooms = userMap[user]['joinedRooms']
+
     emit('Connect successed', message({
         'status': 'connect',
         'joinedRooms': joinedRooms,
