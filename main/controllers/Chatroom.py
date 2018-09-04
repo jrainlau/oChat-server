@@ -11,7 +11,8 @@ roomMap = dict()
 userMap = dict()
 
 def message(msg, code):
-    msg['time'] = time.strftime("%Y-%m-%d %H:%M", time.localtime())
+    if isinstance(msg, dict):
+        msg['time'] = time.strftime("%Y-%m-%d %H:%M", time.localtime())
     return {
         'message': msg,
         'code': code
