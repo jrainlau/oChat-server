@@ -24,7 +24,7 @@ def check_if_token_in_blacklist(decrypted_token):
     return jti in blacklist
 
 from .routes import routes
-from .controllers import UserRegistration, Chatroom
+from .controllers import UserRegistration, Chatroom, Manager
 
 api.add_resource(UserRegistration.UserRegistration, '/registration')
 api.add_resource(UserRegistration.UserLogin, '/login')
@@ -33,3 +33,4 @@ api.add_resource(UserRegistration.UserLogoutRefresh, '/logout/refresh')
 api.add_resource(UserRegistration.TokenRefresh, '/token/refresh')
 api.add_resource(UserRegistration.AllUsers, '/allUsers')
 api.add_resource(UserRegistration.UserExist, '/getUser')
+api.add_resource(Manager.GenerateInviteCode, '/generateInviteCode')
