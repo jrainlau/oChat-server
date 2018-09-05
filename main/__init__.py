@@ -16,7 +16,7 @@ blacklist = set()
 api = Api(app)
 jwt = JWTManager(app)
 socketio = SocketIO(app, async_handlers=True)
-CORS(app)
+CORS(app, resources={r"/*":{"origins":"*"}})
 
 @jwt.token_in_blacklist_loader
 def check_if_token_in_blacklist(decrypted_token):
