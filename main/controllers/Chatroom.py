@@ -95,7 +95,7 @@ def handleJoin(data):
     if not room in roomMap:
         emit('status', message({
             'status': 'join failed'
-        }))
+        }, 200))
         return False
 
     if not user in roomMap[room]['members']:
