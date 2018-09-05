@@ -1,0 +1,6 @@
+flask
+flask-restful
+flask-jwt-extended
+flask-socketio
+werkzeug
+passlib
