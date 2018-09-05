@@ -28,7 +28,7 @@ def authenticatedOnly(f):
             emit('Connect failed', message(str(e), 401))
     return wrapped
 
-@socketio.on('connect', namespace = '/')
+@socketio.on('connect', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleConnect():
     user = decode_token(request.args.get('token'))['identity']
@@ -41,7 +41,7 @@ def handleConnect():
         'joinedRooms': joinedRooms,
     }, 200))
 
-@socketio.on('create', namespace = '/')
+@socketio.on('create', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleCreate(data):
     user = decode_token(request.args.get('token'))['identity']
@@ -85,7 +85,7 @@ def handleCreate(data):
         'members': roomMap[room]['members']
     }, 200), room = room)
 
-@socketio.on('join', namespace = '/')
+@socketio.on('join', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleJoin(data):
     user = decode_token(request.args.get('token'))['identity']
@@ -125,7 +125,7 @@ def handleJoin(data):
         'members': roomMap[room]['members']
     }, 200), room = room)
 
-@socketio.on('leave', namespace = '/')
+@socketio.on('leave', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleLeave(data):
     user = decode_token(request.args.get('token'))['identity']
@@ -151,7 +151,7 @@ def handleLeave(data):
 
     leave_room(room)
 
-@socketio.on('text', namespace = '/')
+@socketio.on('text', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleText(data):
     user = decode_token(request.args.get('token'))['identity']
@@ -163,7 +163,7 @@ def handleText(data):
         'roomName': roomMap[room]['roomName']
     }, 200), room = room)
 
-@socketio.on('rename', namespace = '/')
+@socketio.on('rename', namespace = 'https://jrainlau.com/ochat-server/chat')
 @authenticatedOnly
 def handleChangeRoomName(data):
     user = decode_token(request.args.get('token'))['identity']
