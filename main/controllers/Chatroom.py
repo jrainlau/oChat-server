@@ -47,6 +47,10 @@ def handleCreate(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
     avatar = UserModel(user).getUser(noPsw = True)['avatar']
+    avatarMap = {
+        'user': user,
+        'avatar': avatar
+    }
     if 'roomName' in data and data['roomName']:
         roomName = data['roomName']
     else:
@@ -57,7 +61,8 @@ def handleCreate(data):
     roomMap[room] = {
         'members': [],
         'roomId': room,
-        'roomName': roomName
+        'roomName': roomName,
+        'avatarList': [avatarMap]
     }
 
     if not user in roomMap[room]['members']:
@@ -91,6 +96,10 @@ def handleJoin(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
     avatar = UserModel(user).getUser(noPsw = True)['avatar']
+    avatarMap = {
+        'user': user,
+        'avatar': avatar
+    }
 
     if not room in roomMap:
         emit('status', message({
@@ -100,6 +109,7 @@ def handleJoin(data):
 
     if not user in roomMap[room]['members']:
         roomMap[room]['members'].append(user)
+        roomMap[room]['avatarList'].append(avatarMap)
 
     if not user in userMap:
         userMap[user] = {
@@ -119,6 +129,7 @@ def handleJoin(data):
         'status': 'joined',
         'user': user,
         'avatar': avatar,
+        'avatarList': roomMap[room]['avatarList'],
         'roomId': room,
         'roomName': roomMap[room]['roomName'],
         'joinedRooms': userMap[user]['joinedRooms'],
@@ -136,9 +147,13 @@ def handleLeave(data):
 
     def removeJoinedRoom(theRoom):
         return theRoom['roomId'] != room
+    
+    def removeAvatar(avatarMap):
+        return avatarMap['user'] != user
 
     roomMap[room]['members'] = list(filter(removeUser, roomMap[room]['members']))
     userMap[user]['joinedRooms'] = list(filter(removeJoinedRoom, userMap[user]['joinedRooms']))
+    roomMap[room]['avatarList'] = list(filter(removeAvatar, roomMap[room]['avatarList']))
 
     emit('status', message({
         'status': 'left',
