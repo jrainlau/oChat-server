@@ -1,3 +1,4 @@
 venv
 datas
 *.pyc
+start.sh
