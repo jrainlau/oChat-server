@@ -5,6 +5,9 @@ from flask import request
 from flask_jwt_extended import jwt_required, decode_token
 import random
 import ast
+from .. import mongo
+
+inviteCodes = mongo.db.inviteCodes
 
 def authenticatedOnly(f):
     @functools.wraps(f)
@@ -19,16 +22,17 @@ class GenerateInviteCode(Resource):
     @authenticatedOnly
     def get(self):
         newCode = ''
-        originList = []
+        objId = inviteCodes.find_one({})['_id']
+        codesList = inviteCodes.find_one({})['list']
+
         for i in range(4):
             newCode += str(random.randint(0, 9))
-        with open('./datas/inviteCodes.txt', 'r') as f:
-            originList = ast.literal_eval(f.read())
-            originList.append(newCode)
-        with open('./datas/inviteCodes.txt', 'w') as f:
-            f.write(str(originList))
+        codesList.append(newCode)
+
+        inviteCodes.update({ '_id': objId }, { '$set': {'list': codesList} })
+        
         return {
-            'inviteCodesList': originList,
+            'inviteCodesList': codesList,
             'newCode': newCode
         }
 
