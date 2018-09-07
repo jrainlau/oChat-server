@@ -26,9 +26,8 @@ class UserModel():
 
     def getUser(self, noPsw = False):
         user = users.find_one({ 'username': self.username }, { '_id': False })
-        codes = inviteCodes.find_one({})['list']
         if user:
-            return { 'user': user, 'inviteCodes': codes }
+            return user
         else:
             return {}
 
