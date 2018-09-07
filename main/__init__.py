@@ -16,7 +16,6 @@ app.config['PROPAGATE_EXCEPTIONS'] = True
 app.config['JWT_BLACKLIST_ENABLED'] = True
 app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = False
-# app.config['MONGO_URI'] = 'mongodb://ochatAdmin:Password1@0.0.0.0:27017/ochat'
 app.config['MONGO_URI'] = 'mongodb://' + dbauth['user'] + ':' + dbauth['pwd'] + '@0.0.0.0:27017/ochat'
 
 blacklist = set()
