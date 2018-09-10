@@ -68,20 +68,28 @@ class UserModel():
         elif not self.isInvited():
             return 'Invite code error!'
 
-    def editProfile(self, newPwd = ''):
+    def editProfile(self, newName = '', newPwd = '', newAvatar = ''):
+        if not newName:
+            newName = self.username
+        if not newPwd:
+            newPwd = self.password
+        if not newAvatar:
+            newAvatar = self.avatar
+
         user = users.find_one({ 'username': self.username })
-        if user and UserModel.verify_hash(newPwd, user['password']):
+
+        if user and UserModel.verify_hash(self.password, user['password']):
             userId = user['_id']
             users.update({ '_id': userId }, {
                 '$set': {
-                    'username': self.username,
-                    'avatar': self.avatar,
-                    'password': newPwd
+                    'username': newName,
+                    'avatar': newAvatar,
+                    'password': UserModel.generate_hash(newPwd)
                 }
             })
             return {
-                'username': self.username,
-                'avatar': self.avatar,
+                'username': newName,
+                'avatar': newAvatar,
             }
         elif user and not UserModel.verify_hash(newPwd, user['password']):
             return 'Password incorrect!'

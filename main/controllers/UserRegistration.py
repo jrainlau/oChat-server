@@ -42,7 +42,7 @@ class UserLogin(Resource):
         data = parser.parse_args()
         user = UserModel(data['username'], data['password']).getUser()
         
-        if user:
+        if 'username' in user:
             access_token = create_access_token(identity = data['username'])
             refresh_token = create_refresh_token(identity = data['username'])
             user['access_token'] = access_token
@@ -85,10 +85,12 @@ class EditProfile(Resource):
     @jwt_required
     def post(self):
         parserProfile = parser.copy()
-        parserProfile.add_argument('avatar', help = 'This field cannot be blank', required = True)
+        parserProfile.add_argument('newAvatar')
+        parserProfile.add_argument('newName')
+        parserProfile.add_argument('newPassword')
         data = parserProfile.parse_args()
 
-        result = UserModel(data['username'], data['password'], data['avatar']).editProfile()
+        result = UserModel(data['username'], data['password']).editProfile(data['newName'], data['newPassword'], data['newAvatar'])
 
         if isinstance(result, dict):
             return { 'message': result }, 200
