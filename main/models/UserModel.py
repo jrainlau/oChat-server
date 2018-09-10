@@ -32,7 +32,7 @@ class UserModel():
                 return user
             else:
                 return 'Password incorrect!'
-        elif user and noPwd:
+        elif user and noPsw:
             del user['password']
             return user
         elif not user:
