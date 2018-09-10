@@ -26,9 +26,16 @@ class UserModel():
 
     def getUser(self, noPsw = False):
         user = users.find_one({ 'username': self.username }, { '_id': False })
-        if user:
+        if user and not noPsw:
+            if UserModel.verify_hash(self.password, user['password']):
+                del user['password']
+                return user
+            else:
+                return 'Password incorrect!'
+        elif user and noPwd:
+            del user['password']
             return user
-        else:
+        elif not user:
             return {}
 
     def getAllUsers(self):
@@ -61,22 +68,25 @@ class UserModel():
         elif not self.isInvited():
             return 'Invite code error!'
 
-    def editProfile(self):
+    def editProfile(self, newPwd = ''):
         user = users.find_one({ 'username': self.username })
-        if user:
+        if user and UserModel.verify_hash(newPwd, user['password']):
             userId = user['_id']
             users.update({ '_id': userId }, {
                 '$set': {
                     'username': self.username,
                     'avatar': self.avatar,
-                    'password': self.password
+                    'password': newPwd
                 }
             })
             return {
                 'username': self.username,
                 'avatar': self.avatar,
             }
-        else:
+        elif user and not UserModel.verify_hash(newPwd, user['password']):
+            return 'Password incorrect!'
+        elif not user:
             return 'Username: ' + self.username + ' was not found!'
+
 
 
