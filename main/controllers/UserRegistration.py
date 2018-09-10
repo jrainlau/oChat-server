@@ -79,5 +79,18 @@ class TokenRefresh(Resource):
 class AllUsers(Resource):
     @jwt_required
     def get(self):
-        print(get_jwt_identity())
         return UserModel.getAllUsers(self)
+
+class EditProfile(Resource):
+    @jwt_required
+    def post(self):
+        parserProfile = parser.copy()
+        parserProfile.add_argument('avatar', help = 'This field cannot be blank', required = True)
+        data = parserProfile.parse_args()
+
+        result = UserModel(data['username'], data['password'], data['avatar']).editProfile()
+
+        if isinstance(result, dict):
+            return { 'message': result }, 200
+        else:
+            return { 'message': result }, 500

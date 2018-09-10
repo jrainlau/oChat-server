@@ -60,3 +60,23 @@ class UserModel():
             return 'User was exist!'
         elif not self.isInvited():
             return 'Invite code error!'
+
+    def editProfile(self):
+        user = users.find_one({ 'username': self.username })
+        if user:
+            userId = user['_id']
+            users.update({ '_id': userId }, {
+                '$set': {
+                    'username': self.username,
+                    'avatar': self.avatar,
+                    'password': self.password
+                }
+            })
+            return {
+                'username': self.username,
+                'avatar': self.avatar,
+            }
+        else:
+            return 'Username: ' + self.username + ' was not found!'
+
+

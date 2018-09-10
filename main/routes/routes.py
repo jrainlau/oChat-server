@@ -1,23 +1,12 @@
-from .. import app, socketio, mongo
-from flask import jsonify, request
+from ..controllers import UserRegistration, Chatroom, Manager
+from .. import api
 
-@app.route('/')
-def index():
-    return jsonify({
-        'message': 'Hello, World!'
-    })
-
-@app.route('/datas/add', methods = ['POST'])
-def addUser():
-    username = request.args['username']
-    return 'xxx'
-
-
-@app.route('/datas/find/<username>')
-def getDatas(username):
-    users = mongo.db.users
-    user = users.find_one({'username': username})
-    if (user):
-        return str(user)
-    else:
-        return 'User ' + username + ' not found!'
+api.add_resource(UserRegistration.UserRegistration, '/registration')
+api.add_resource(UserRegistration.UserLogin, '/login')
+api.add_resource(UserRegistration.UserLogoutAccess, '/logout/access')
+api.add_resource(UserRegistration.UserLogoutRefresh, '/logout/refresh')
+api.add_resource(UserRegistration.TokenRefresh, '/token/refresh')
+api.add_resource(UserRegistration.AllUsers, '/allUsers')
+api.add_resource(UserRegistration.UserExist, '/getUser')
+api.add_resource(UserRegistration.EditProfile, '/editProfile')
+api.add_resource(Manager.GenerateInviteCode, '/generateInviteCode')
