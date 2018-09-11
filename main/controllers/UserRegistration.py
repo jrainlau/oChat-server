@@ -37,6 +37,16 @@ class UserExist(Resource):
         result = UserModel(data['username']).getUser(noPsw = True)
         return { 'message': result }, 200
 
+class GetUserInfo(Resource):
+    @jwt_required
+    def post(self):
+        parser_info = reqparse.RequestParser()
+        parser_info.add_argument('username', help = 'This field cannot be blank', required = True)
+        data = parser_info.parse_args()
+
+        result = UserModel(data['username']).getUser(noPsw = True)
+        return { 'message': result }, 200
+
 class UserLogin(Resource):
     def post(self):
         data = parser.parse_args()
@@ -59,7 +69,7 @@ class UserLogoutAccess(Resource):
         return { 'message': 'Successfully logged out' }, 200
 
 class UserLogoutRefresh(Resource):
-    @jwt_required
+    @jwt_refresh_token_required
     def post(self):
         jti = get_raw_jwt()['jti']
         blacklist.add(jti)
