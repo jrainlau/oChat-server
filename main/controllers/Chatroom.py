@@ -5,7 +5,7 @@ from flask_socketio import send, emit, disconnect, join_room, leave_room
 from flask import request
 from flask_jwt_extended import get_jti, decode_token
 from ..utils.roomName import generateRoomName
-from ..models.user import UserModel
+from ..models.UserModel import UserModel
 
 roomMap = dict()
 userMap = dict()
@@ -42,7 +42,7 @@ def handleConnect():
     }, 200))
 
 @socketio.on('create', namespace = '/')
-@authenticatedOnly
+# @authenticatedOnly
 def handleCreate(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
