@@ -42,7 +42,7 @@ def handleConnect():
     }, 200))
 
 @socketio.on('create', namespace = '/')
-# @authenticatedOnly
+@authenticatedOnly
 def handleCreate(data):
     user = decode_token(request.args.get('token'))['identity']
     room = data['roomId']
