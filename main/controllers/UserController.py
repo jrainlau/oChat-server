@@ -1,10 +1,8 @@
 from flask_restful import Resource, reqparse
-# from ..models.user import UserModel
-from ..models.UserModel import UserModel
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
+
 from .. import blacklist
-from .Chatroom import roomMap
-import werkzeug
+from ..models.UserModel import UserModel
 
 parser = reqparse.RequestParser()
 parser.add_argument('username', help = 'This field cannot be blank', required = True)
@@ -12,10 +10,10 @@ parser.add_argument('password', help = 'This field cannot be blank', required = 
 
 class UserRegistration(Resource):
     def post(self):
-        parser_register = parser.copy()
-        parser_register.add_argument('inviteCode', help = 'This field cannot be blank', required = True)
-        parser_register.add_argument('avatar')
-        data = parser_register.parse_args()
+        parserRegister = parser.copy()
+        parserRegister.add_argument('inviteCode', help = 'This field cannot be blank', required = True)
+        parserRegister.add_argument('avatar')
+        data = parserRegister.parse_args()
 
         result = UserModel(data['username'], data['password'], data['inviteCode'], data['avatar']).registration()
 
@@ -30,9 +28,9 @@ class UserRegistration(Resource):
 
 class UserExist(Resource):
     def post(self):
-        parser_exist = reqparse.RequestParser()
-        parser_exist.add_argument('username', help = 'This field cannot be blank', required = True)
-        data = parser_exist.parse_args()
+        parserExist = reqparse.RequestParser()
+        parserExist.add_argument('username', help = 'This field cannot be blank', required = True)
+        data = parserExist.parse_args()
 
         result = UserModel(data['username']).getUser(noPsw = True)
         return { 'message': result }, 200
@@ -40,9 +38,9 @@ class UserExist(Resource):
 class GetUserInfo(Resource):
     @jwt_required
     def post(self):
-        parser_info = reqparse.RequestParser()
-        parser_info.add_argument('username', help = 'This field cannot be blank', required = True)
-        data = parser_info.parse_args()
+        parserInfo = reqparse.RequestParser()
+        parserInfo.add_argument('username', help = 'This field cannot be blank', required = True)
+        data = parserInfo.parse_args()
 
         result = UserModel(data['username']).getUser(noPsw = True)
         return { 'message': result }, 200
