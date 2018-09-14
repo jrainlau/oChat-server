@@ -1,7 +1,7 @@
 import functools
 import time
 from .. import socketio
-from flask_socketio import send, emit, disconnect, join_room, leave_room
+from flask_socketio import emit, disconnect, join_room, leave_room
 from flask import request
 from flask_jwt_extended import get_jti, decode_token
 from ..utils.roomName import generateRoomName

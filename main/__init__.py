@@ -22,7 +22,7 @@ blacklist = set()
 
 api = Api(app)
 jwt = JWTManager(app)
-socketio = SocketIO(app, async_handlers=True)
+socketio = SocketIO(app)
 mongo = PyMongo(app)
 CORS(app, resources={r"/*":{"origins":"*"}}, supports_credentials=True)
 

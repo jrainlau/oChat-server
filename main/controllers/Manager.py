@@ -1,10 +1,9 @@
-from flask_restful import Resource, reqparse
-import werkzeug
 import functools
+
+from flask_restful import Resource, reqparse
 from flask import request
 from flask_jwt_extended import jwt_required, decode_token
 import random
-import ast
 from .. import mongo
 
 inviteCodes = mongo.db.inviteCodes

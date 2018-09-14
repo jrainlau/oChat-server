@@ -1,4 +1,4 @@
-from ..controllers import UserController, Chatroom, Manager
+from ..controllers import UserController, ChatController, Manager
 from .. import api
 
 api.add_resource(UserController.UserRegistration, '/registration')
