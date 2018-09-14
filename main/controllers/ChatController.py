@@ -1,11 +1,13 @@
 import functools
 import time
-from .. import socketio
+
 from flask_socketio import emit, disconnect, join_room, leave_room
 from flask import request
 from flask_jwt_extended import get_jti, decode_token
+
 from ..utils.roomName import generateRoomName
 from ..models.UserModel import UserModel
+from .. import socketio
 
 roomMap = dict()
 userMap = dict()
@@ -59,14 +61,11 @@ def handleCreate(data):
     join_room(room)
 
     roomMap[room] = {
-        'members': [],
+        'members': [user],
         'roomId': room,
         'roomName': roomName,
         'avatarList': [avatarMap]
     }
-
-    if not user in roomMap[room]['members']:
-        roomMap[room]['members'].append(user)
 
     if not user in userMap:
         userMap[user] = {
@@ -77,8 +76,8 @@ def handleCreate(data):
         'roomId': room,
         'members': roomMap[room]['members']
     }
-    if not room in [room['roomId'] for room in userMap[user]['joinedRooms']]:
-        userMap[user]['joinedRooms'].append(thisRoom)
+    
+    userMap[user]['joinedRooms'].append(thisRoom)
 
     emit('status', message({
         'status': 'created',
